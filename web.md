@@ -43,7 +43,7 @@ Contraste legible, `alt` en imágenes, `lang` en `<html>`, etiquetas en los camp
 
 ### WEB-005 · Rutas relativas — DEBE
 
-Enlaces, scripts y estilos usan rutas relativas para que el sitio funcione en local, en un subdirectorio de GitHub Pages o en otro dominio.
+Enlaces, scripts y estilos usan rutas relativas para que el sitio funcione en local, en un subdirectorio de GitHub Pages o en otro dominio. Excepción: `og:url`, `og:image` y `canonical` van con URL absoluta (ver WEB-006).
 
 **Por qué:** `bernardo-qg.github.io/proyecto/` rompe las rutas que empiezan con `/`.
 
@@ -52,9 +52,9 @@ Enlaces, scripts y estilos usan rutas relativas para que el sitio funcione en lo
 
 ### WEB-006 · Metadatos al compartir — DEBERÍA
 
-Cada sitio lleva `<title>`, `description`, favicon y `og:image` para que se vea bien al compartir el enlace.
+Cada sitio lleva `<title>`, `description`, favicon y `og:image` (1200×630) para que se vea bien al compartir el enlace. `og:image` y `og:url` van con URL absoluta: quien lee la etiqueta es el servidor de la red social, no el navegador, y no resuelve rutas relativas.
 
 **Por qué:** el enlace es lo primero que ve quien no conoce el proyecto.
 
-✔ `<meta property="og:image" content="img/preview.png">`
+✔ `<meta property="og:image" content="https://usuario.github.io/proyecto/img/og-image.png">`
 ✘ Pestaña con el título "Document" y vista previa vacía

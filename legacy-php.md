@@ -36,12 +36,12 @@ No se usa sintaxis posterior a PHP 5.4: sin `??`, sin `...`, sin tipos escalares
 
 ### PHP-004 · Migración gradual — DEBE
 
-Solo se migra a las clases nuevas el archivo que se toca por un requerimiento. Cada instalación usa las clases que existen en ella; no se mezclan versiones de una misma clase.
+Solo se migra el archivo que se toca por un requerimiento. Migrar significa llevarlo a las clases comunes (PHP-009 a PHP-011). Cada instalación usa lo que existe en ella: donde aún no hay clases comunes, se siguen usando las funciones viejas y no se incluye la carpeta nueva.
 
-**Por qué:** migrar todo de golpe es imposible sin git ni pruebas; mezclar clases provoca redeclaraciones.
+**Por qué:** migrar todo de golpe es imposible sin git ni pruebas; mezclar versiones de una misma función provoca redeclaraciones.
 
 ✔ Usar `ConsultaSQL()` en una instalación que aún no tiene `Sql::`
-✘ Incluir la carpeta de clases nuevas donde ya existen las viejas
+✘ Incluir `clases/funcionesarmadas/` donde ya están declaradas las funciones viejas
 
 ### PHP-005 · No asumir que las instalaciones son iguales — DEBE
 
@@ -69,3 +69,60 @@ Un cambio grande se prueba en una copia con otro nombre (`reporte2.php`) antes d
 
 ✔ `reporte2.php` validado → se renombra a `reporte.php`
 ✘ Editar directo el archivo en uso a media jornada
+
+### PHP-008 · Entrada a SQL siempre limpia — DEBE
+
+Todo valor que viene de `$_POST`, `$_GET` o `$_SESSION` se limpia antes de entrar a una consulta: `(int)` o `(float)` para números e ids, y escape para texto (`Sql::escape()` donde ya hay clases comunes, `mysqli_real_escape_string` o `mysql_real_escape_string` según la conexión donde no).
+
+**Por qué:** sin sentencias preparadas en PHP 5, el escape y el casteo son la única defensa contra la inyección SQL.
+
+```php
+// ✔
+$id     = (int) $_POST["IdPersona"];
+$nombre = Sql::escape($_POST["Nombre"]);
+Sql::run("SELECT ... WHERE IdPersona = $id AND Nombre = '$nombre'");
+
+// ✘
+ConsultaSQL($link, "SELECT ... WHERE IdPersona = " . $_POST["IdPersona"]);
+```
+
+### PHP-009 · Funciones comunes en clases — DEBE
+
+Lo que se usa en varios módulos vive en una clase por archivo dentro de `clases/funcionesarmadas/` (`Sql`, `Texto`, `Utils`, `Logger`, `ClienteHttp`…), protegida con `if (!class_exists(...))`. El archivo de funciones viejo solo las incluye, y la función vieja queda como envoltorio `@deprecated` que llama a la clase hasta que nadie la use. Una clase se adapta de la instalación más avanzada y su encabezado lo dice.
+
+**Por qué:** una sola implementación por instalación, sin romper los archivos que todavía no se migran.
+
+```php
+// ✔ clases/funcionesarmadas/sql.php
+// v1.0.0-srv2-cliente | 2026-07-23 | BQ | version inicial adaptada de srv1-cliente
+if (!class_exists('Sql')) { class Sql { ... } }
+
+/** @deprecated Usar Sql::run(). */
+function ConsultaSQL($pLink, $pCadenaSQL) { Sql::init($pLink); return Sql::run($pCadenaSQL); }
+
+// ✘ Copiar ConsultaSQL() dentro de cada módulo con pequeñas diferencias
+```
+
+### PHP-010 · Consultas por la clase Sql — DEBE
+
+En archivos migrados, toda consulta pasa por `Sql::run()` (SELECT), `Sql::uno()` (una fila) o `Sql::exec()` (INSERT, UPDATE, DELETE). La clase usa la extensión que tenga el servidor (`mysql` o `mysqli`) y manda los errores y la consulta al `Logger`, nunca a la pantalla.
+
+**Por qué:** cambiar de extensión o de versión de PHP se hace en un solo archivo, y el usuario no ve tablas ni columnas en un error.
+
+✔ `$persona = Sql::uno("SELECT ... LIMIT 1");`
+✘ `mysql_query($sql) or die(mysql_error());`
+
+### PHP-011 · Todo módulo arranca con el guard — DEBE
+
+En archivos migrados, la primera línea después del encabezado incluye `clases/guard_modulo.php`, que inicia la sesión, valida que el usuario esté autenticado, carga las clases comunes y las dependencias que declare el módulo.
+
+**Por qué:** la validación de sesión no depende de que cada archivo la copie bien.
+
+```php
+// ✔
+$dependencias = ["pld.php"];
+include("clases/guard_modulo.php");
+
+// ✘ session_start(); include(...); if (!isset($_SESSION[...])) ... copiado en cada archivo
+```
+
