@@ -9,6 +9,7 @@ Una regla nueva sube la versión menor; quitar o cambiar el sentido de una regla
 ### Cambiado
 
 - DB-003: ninguna política de escritura para el rol `anon`; RLS activo no basta.
+- COD-001: lo nuevo en inglés; lo existente en español no se renombra solo por idioma, se traduce al reescribirlo.
 - COD-003: también aplica a archivos sin referencia (imágenes, scripts, documentos).
 
 ## [1.0.0] - 2026-11-24

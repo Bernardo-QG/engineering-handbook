@@ -2,14 +2,14 @@
 
 Código simple que se entienda al volver a él meses después.
 
-### COD-001 · Nombres descriptivos en inglés — DEBERÍA
+### COD-001 · Nombres descriptivos; lo nuevo en inglés — DEBERÍA
 
-Variables, funciones, archivos y tablas nuevas en inglés, con nombres que digan qué son. Sin abreviaturas salvo las universales (`id`, `url`, `db`). Los comentarios y la documentación van en español.
+Variables, funciones, archivos y tablas nuevas van en inglés, con nombres que digan qué son y sin abreviaturas salvo las universales (`id`, `url`, `db`). Lo que ya existe en español no se renombra solo por el idioma: se traduce cuando se reescribe esa parte. Los comentarios y la documentación van en español.
 
-**Por qué:** el nombre es la primera documentación; el inglés es el idioma de las herramientas y de los ejemplos.
+**Por qué:** el nombre es la primera documentación; renombrar código que funciona solo por idioma es riesgo sin beneficio, y así el inglés entra de forma gradual.
 
-✔ `calculateMonthlyBalance()` · `$pendingRemittances`
-✘ `calc2()` · `$datos` · `$x`
+✔ Función nueva `calculateMonthlyBalance()` junto a la existente `DameNombre()`
+✘ `calc2()` · `$datos` · renombrar 70 funciones en un solo commit
 
 ### COD-002 · Un comentario por función — DEBE
 
