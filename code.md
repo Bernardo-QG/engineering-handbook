@@ -49,5 +49,7 @@ Todo proyecto lleva `.editorconfig`: UTF-8, fin de línea LF, sangría de 4 espa
 
 **Por qué:** evita diferencias falsas en los diffs y problemas de acentos.
 
-✔ `.editorconfig` en la raíz desde el primer commit
+Además, `.gitattributes` con `* text=auto eol=lf` para que git guarde y entregue LF aunque se trabaje en Windows.
+
+✔ `.editorconfig` y `.gitattributes` en la raíz desde el primer commit
 ✘ Archivos mezclando CRLF/LF y tabs/espacios
