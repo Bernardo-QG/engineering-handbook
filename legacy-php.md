@@ -60,3 +60,12 @@ Las listas largas de reportes o consultas viven en `<archivo>_config.php` y la p
 
 ✔ `reportes.php` (pantalla) + `reportes_config.php` (arreglo de reportes)
 ✘ Un `if (isset($_POST[...]))` y un botón escrito a mano por reporte
+
+### PHP-007 · Probar el cambio aparte antes de reemplazar — DEBERÍA
+
+Un cambio grande se prueba en una copia con otro nombre (`reporte2.php`) antes de reemplazar el archivo que usan los usuarios.
+
+**Por qué:** sin ambiente de pruebas, la copia es la única forma de validar en el servidor real sin afectar a nadie.
+
+✔ `reporte2.php` validado → se renombra a `reporte.php`
+✘ Editar directo el archivo en uso a media jornada

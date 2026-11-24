@@ -55,3 +55,21 @@ No se hace `push --force` sobre `main` ni se reescriben commits ya subidos.
 
 ✔ `git revert <commit>`
 ✘ `git push --force origin main`
+
+### GIT-007 · .gitignore desde el primer commit — DEBE
+
+Todo repositorio arranca con `.gitignore` que excluye secretos (`.env`, `.env.*`), dependencias (`node_modules/`, `vendor/`), configuración del editor y archivos del sistema (`Thumbs.db`, `.DS_Store`).
+
+**Por qué:** lo que entra una vez al historial ya no se saca limpio.
+
+✔ `.gitignore` en el commit inicial
+✘ Agregar `.env` al `.gitignore` después de haberlo subido
+
+### GIT-008 · Fin de línea LF — DEBE
+
+Todo repositorio lleva `.gitattributes` con `* text=auto eol=lf`.
+
+**Por qué:** en Windows git convierte a CRLF y los diffs muestran archivos completos como cambiados.
+
+✔ `.gitattributes` en la raíz
+✘ Depender de que cada equipo tenga bien `core.autocrlf`

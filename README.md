@@ -12,6 +12,8 @@ Cada proyecto adopta solo los módulos que ocupa. Las reglas sirven para aplicar
 | [code](code.md) | COD | Nombres, comentarios y estilo |
 | [documentation](documentation.md) | DOC | README, CHANGELOG y ADR |
 | [security](security.md) | SEC | Secretos y datos sensibles |
+| [web](web.md) | WEB | Sitios estáticos y su publicación |
+| [database](database.md) | DB | Esquema, migraciones y consultas |
 | [legacy-php](legacy-php.md) | PHP | Sistemas PHP 5 sin control de versiones |
 
 ## Formato de una regla
