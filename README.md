@@ -39,4 +39,4 @@ Los IDs no se reutilizan. Si una regla se elimina, su ID queda retirado.
 
 ## Uso con IA
 
-El archivo global de instrucciones (`~/.kiro/steering/AGENTS.md`, importado desde `~/.claude/CLAUDE.md`) apunta a este repositorio, de modo que cualquier proyecto lo sigue sin copiarlo. En un proyecto basta con citar el ID de la regla (por ejemplo, "aplica GIT-001").
+El archivo global de Claude (`~/.claude/CLAUDE.md`) apunta a este repositorio, de modo que cualquier proyecto lo sigue sin copiarlo. En un proyecto basta con citar el ID de la regla (por ejemplo, "aplica GIT-001").
