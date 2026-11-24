@@ -25,9 +25,9 @@ function groupAlerts(...)
 function groupAlerts(...)
 ```
 
-### COD-003 · Sin código muerto — DEBE
+### COD-003 · Sin código ni archivos muertos — DEBE
 
-No se deja código comentado "por si acaso" ni funciones sin uso. Para recuperarlo está git.
+No se deja código comentado "por si acaso", funciones sin uso ni archivos (imágenes, scripts, documentos) que nada referencia. Para recuperarlos está git.
 
 **Por qué:** el código muerto confunde y nadie se atreve a borrarlo después.
 

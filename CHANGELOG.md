@@ -4,6 +4,13 @@ Todos los cambios relevantes del handbook. El formato sigue [Keep a Changelog](h
 
 Una regla nueva sube la versión menor; quitar o cambiar el sentido de una regla sube la mayor; corregir redacción o ejemplos sube el parche.
 
+## [Sin publicar]
+
+### Cambiado
+
+- DB-003: ninguna política de escritura para el rol `anon`; RLS activo no basta.
+- COD-003: también aplica a archivos sin referencia (imágenes, scripts, documentos).
+
 ## [1.0.0] - 2026-11-24
 
 ### Agregado

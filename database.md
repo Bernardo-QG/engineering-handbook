@@ -22,12 +22,12 @@ Dentro de un proyecto, tablas y columnas siguen una sola convención (en proyect
 
 ### DB-003 · RLS en toda tabla expuesta — DEBE
 
-En Supabase, toda tabla accesible desde el navegador tiene Row Level Security activado y políticas explícitas de lectura y escritura.
+En Supabase, toda tabla accesible desde el navegador tiene Row Level Security activado y políticas explícitas de lectura y escritura. Ninguna política de escritura se da al rol `anon`.
 
-**Por qué:** la llave pública está en el JS; sin RLS, cualquiera puede leer o borrar todo.
+**Por qué:** la llave pública está en el JS; con RLS apagado o con escritura para `anon`, cualquiera puede modificar o borrar todo.
 
-✔ `alter table documents enable row level security;` + políticas por operación
-✘ Tabla con RLS apagado "mientras lo termino"
+✔ Lectura `TO anon`, escritura `TO authenticated`
+✘ RLS apagado "mientras lo termino" · `FOR ALL TO anon USING (true)`
 
 ### DB-004 · La llave privada nunca en el cliente — NO DEBE
 
