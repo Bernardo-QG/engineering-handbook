@@ -8,11 +8,11 @@ Cada proyecto adopta solo los módulos que ocupa. Las reglas sirven para aplicar
 
 | Módulo | Prefijo | Cubre |
 |---|---|---|
-| [git](git/README.md) | GIT | Commits, ramas y versiones |
-| [code](code/README.md) | COD | Nombres, comentarios y estilo |
-| [documentation](documentation/README.md) | DOC | README, CHANGELOG y ADR |
-| [security](security/README.md) | SEC | Secretos y datos sensibles |
-| [legacy-php](legacy-php/README.md) | PHP | Sistemas PHP 5 sin control de versiones |
+| [git](git.md) | GIT | Commits, ramas y versiones |
+| [code](code.md) | COD | Nombres, comentarios y estilo |
+| [documentation](documentation.md) | DOC | README, CHANGELOG y ADR |
+| [security](security.md) | SEC | Secretos y datos sensibles |
+| [legacy-php](legacy-php.md) | PHP | Sistemas PHP 5 sin control de versiones |
 
 ## Formato de una regla
 
