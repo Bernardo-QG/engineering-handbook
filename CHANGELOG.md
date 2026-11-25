@@ -9,6 +9,7 @@ Una regla nueva sube la versión menor; quitar o cambiar el sentido de una regla
 ### Agregado
 
 - PHP-008 a PHP-011: entrada limpia a SQL, funciones comunes en clases, consultas por `Sql` y arranque con `guard_modulo`, según la migración gradual en curso.
+- PHP-012 a PHP-015: base explícita en consultas manuales, verificar menú + archivo + permiso, inventario del servidor y separar el entregable de auditoría del análisis interno.
 
 ### Cambiado
 

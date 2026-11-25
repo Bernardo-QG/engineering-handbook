@@ -126,3 +126,39 @@ include("clases/guard_modulo.php");
 // ✘ session_start(); include(...); if (!isset($_SESSION[...])) ... copiado en cada archivo
 ```
 
+
+### PHP-012 · Base explícita en consultas manuales — DEBE
+
+En consultas manuales a un servidor con varias instalaciones, cada tabla lleva el nombre de la base (`base.tabla`).
+
+**Por qué:** varias bases comparten servidor y esquema; una consulta en la base equivocada devuelve datos válidos pero de otro cliente, y la conclusión sale mal sin ningún error.
+
+✔ `SELECT * FROM cliente.grupomenu;`
+✘ `SELECT * FROM grupomenu;` con la base que haya quedado seleccionada
+
+### PHP-013 · Una funcionalidad existe si cumple las tres capas — DEBE
+
+Para afirmar que una instalación tiene una funcionalidad se verifican: la opción en el menú de la base (`mymenugenerador.external_link`), el archivo en el servidor y el permiso del perfil (`grupomenu`).
+
+**Por qué:** el menú puede apuntar a archivos que no existen, un archivo puede existir sin opción de menú y una opción puede no estar asignada al perfil que la necesita.
+
+✔ "Reportes PLD: opción en el menú, `reporteslavadodedinero.php` en el servidor, asignada a Oficial de Cumplimiento"
+✘ "Sí existe, está el archivo en la carpeta"
+
+### PHP-014 · Inventario del servidor, no de la copia local — DEBE
+
+Antes de concluir que un archivo existe o falta, se toma la lista de archivos del servidor de esa instalación.
+
+**Por qué:** la copia local solo tiene lo que se ha tocado por requerimientos y no refleja lo instalado.
+
+✔ `find . -type f -iname '*.php' -printf '%P\t%s\t%TY-%Tm-%Td\n' | sort > ~/<instalacion>_php.txt`
+✘ Revisar solo la carpeta local y reportar como faltante lo que no aparece
+
+### PHP-015 · Auditoría: entregable externo separado del análisis interno — DEBERÍA
+
+Lo que se entrega a la entidad o al auditor describe rutas de menú y funcionamiento. Los archivos, tablas, líneas de código y hallazgos internos van en un documento interno de la instalación.
+
+**Por qué:** al auditor le sirve la ruta en pantalla, no el código, y los hallazgos internos se corrigen antes de exponerlos.
+
+✔ "Catalogos › Personas › Personas: no permite guardar sin CURP"
+✘ "`clientes.php` línea 241 valida `strlen($_POST["CURP"])`"
