@@ -40,3 +40,9 @@ Los IDs no se reutilizan. Si una regla se elimina, su ID queda retirado.
 ## Uso con IA
 
 El archivo global de Claude (`~/.claude/CLAUDE.md`) apunta a este repositorio, de modo que cualquier proyecto lo sigue sin copiarlo. En un proyecto basta con citar el ID de la regla (por ejemplo, "aplica GIT-001").
+
+Claude lee los archivos al iniciar cada sesión, así que un cambio en el handbook aplica desde la siguiente sin instalar nada. En una computadora nueva:
+
+1. Clonar el repositorio en `~/Desktop/PROJECTS/engineering-handbook`.
+2. Agregar a `~/.claude/CLAUDE.md` la importación del handbook: `@~/Desktop/PROJECTS/engineering-handbook/README.md` y una línea igual por cada módulo que deba aplicarse siempre (por ejemplo `.../git.md`).
+3. Para traer cambios hechos en otra computadora: `git pull`.
