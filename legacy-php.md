@@ -88,13 +88,13 @@ ConsultaSQL($link, "SELECT ... WHERE IdPersona = " . $_POST["IdPersona"]);
 
 ### PHP-009 · Funciones comunes en clases — DEBE
 
-Lo que se usa en varios módulos vive en una clase por archivo dentro de `clases/funcionesarmadas/` (`Sql`, `Texto`, `Utils`, `Logger`, `ClienteHttp`…), protegida con `if (!class_exists(...))`. El archivo de funciones viejo solo las incluye, y la función vieja queda como envoltorio `@deprecated` que llama a la clase hasta que nadie la use. Una clase se adapta de la instalación más avanzada y su encabezado lo dice.
+Lo que se usa en varios módulos vive en una clase por archivo dentro de `clases/funcionesarmadas/` (`Sql`, `Texto`, `Utils`, `Logger`, `ClienteHttp`…), protegida con `if (!class_exists(...))`. El archivo de funciones viejo solo las incluye, y la función vieja queda como envoltorio `@deprecated` que llama a la clase hasta que nadie la use. Las clases salen de la base canónica (PHP-016).
 
 **Por qué:** una sola implementación por instalación, sin romper los archivos que todavía no se migran.
 
 ```php
 // ✔ clases/funcionesarmadas/sql.php
-// v1.0.0-srv2-cliente | 2026-07-23 | BQ | version inicial adaptada de srv1-cliente
+// v1.0.0-base | 2026-07-23 | BQ | version inicial
 if (!class_exists('Sql')) { class Sql { ... } }
 
 /** @deprecated Usar Sql::run(). */
@@ -162,3 +162,71 @@ Lo que se entrega a la entidad o al auditor describe rutas de menú y funcionami
 
 ✔ "Catalogos › Personas › Personas: no permite guardar sin CURP"
 ✘ "`clientes.php` línea 241 valida `strlen($_POST["CURP"])`"
+
+### PHP-016 · Una sola base canónica — DEBE
+
+Las clases comunes viven en una carpeta base con la misma estructura que una instalación (`_base/clases/`). Todo cambio se hace primero ahí y se copia a las instalaciones; nunca de una instalación a otra. La diferencia entre `mysql` y `mysqli` vive solo dentro de `Sql`, que detecta la extensión por el tipo de conexión.
+
+**Por qué:** con decenas de instalaciones, cada copia que se adapta por su lado se vuelve una versión más que mantener; una sola fuente hace que mejorar una sea mejorar todas.
+
+✔ Mejorar `_base/clases/funcionesarmadas/texto.php` → copiarlo a las instalaciones que lo usan
+✘ Copiar `texto.php` de una instalación a otra · una base por extensión de MySQL
+
+### PHP-017 · Lo de cada entidad va en configuración — DEBE
+
+Lo que cambia por entidad (montos, correos, mensajes, tipo de aviso) se lee de la configuración de la instalación o del módulo (`_config.php`). Una clase común nunca se edita para una sola entidad.
+
+**Por qué:** en cuanto una clase común tiene un cambio local deja de ser común, y la siguiente mejora ya no se puede copiar sin perder ese cambio.
+
+✔ `AlertaSistema` lee `TIPO_AVISO` ("swal" o "alert") de la configuración de la instalación
+✘ Cambiar `swal` por `alert` dentro de `alerta_sistema.php` de una entidad
+
+### PHP-018 · Capas y dependencias — DEBE
+
+Las clases se ordenan en capas y una clase solo incluye clases de su misma capa o de una inferior, siempre con `if (!class_exists(...))`:
+
+1. Utilidades: `Utils`, `Texto`
+2. Depuración: `Logger`
+3. Acceso: `Sql`, `ClienteHttp`
+4. Servicios: `CorreoService`, servicios de PLD
+
+**Por qué:** sin autoload, un árbol de includes desordenado provoca redeclaraciones y dependencias circulares; si una capa baja necesita a una alta, la clase está mal ubicada.
+
+✔ `CorreoService` incluye `ClienteHttp` y `Utils`
+✘ `Sql` incluye `CorreoService` para avisar de un error
+
+### PHP-019 · Dos bitácoras, dos propósitos — DEBE
+
+`Logger::debug()` es para depurar: sale en la consola del navegador, solo para el usuario de desarrollo y solo si `DEBUG_ACTIVO` está definido con `define()`. `Utils::logEvent()` es el rastro permanente en archivo, para errores y auditoría.
+
+**Por qué:** un error que alguien debe revisar después no puede depender de que un desarrollador tenga la consola abierta, y la depuración no puede encenderse desde la URL o la sesión.
+
+✔ Error de conexión → `Utils::logEvent()`; ver la consulta mientras se prueba → `Sql::run($q, Sql::VISTAZO_COMPLETO)`
+✘ `wuacha()` en medio de la lógica para registrar errores en producción
+
+### PHP-020 · Retornos predecibles — DEBERÍA
+
+Un método que regresa una colección regresa `array()` vacío ante error o sin datos, nunca `null`. Un método que puede fallar regresa `false` después de registrar el error con `Utils::logEvent()`; todavía no se lanzan excepciones.
+
+**Por qué:** el código viejo controla el flujo con `if (!$resultado)` y `foreach` directos; excepciones o `null` romperían a quien ya lo llama.
+
+✔ `Sql::run()` sin resultados → `array()`
+✘ Regresar `null` y obligar a cada llamada a validar antes del `foreach`
+
+### PHP-021 · Orden de migración — DEBERÍA
+
+Se migra primero lo que no depende de nada: utilidades y servicios aislados (correo, HTTP, búsqueda en listas, alertas). Después las pantallas, por requerimiento. El motor genérico de formularios y tablas (`creaformulario()`, `accionregistros()`) y el archivo de procedimientos generales van al final.
+
+**Por qué:** cada pieza migrada se apoya en las anteriores; empezar por el motor genérico obliga a tocar todas las pantallas a la vez.
+
+✔ `pld.php` → clases de servicio, y luego las pantallas de PLD que se toquen
+✘ Reescribir `accionregistros()` mientras hay pantallas que no usan `Sql`
+
+### PHP-022 · Nombres en código migrado — DEBERÍA
+
+Las clases van en `PascalCase` y su archivo en `snake_case` (`ClienteHttp` → `cliente_http.php`). Los parámetros llevan el prefijo `$p` (`$pUsuario`), las variables locales van sin prefijo y las constantes de clase en `UPPER_SNAKE_CASE`, en lugar de valores sueltos.
+
+**Por qué:** el prefijo `$p` en lugar del `$_` viejo muestra de un vistazo qué código ya pasó por la migración, y las constantes evitan números mágicos repetidos.
+
+✔ `Sql::run($pQuery, Sql::VISTAZO_COMPLETO)`
+✘ `ConsultaSQL($_Link, $_Cadena, 2)`
