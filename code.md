@@ -4,7 +4,7 @@ Código simple que se entienda al volver a él meses después.
 
 ### COD-001 · Nombres descriptivos; lo nuevo en inglés — DEBERÍA
 
-Variables, funciones, archivos y tablas nuevas van en inglés, con nombres que digan qué son y sin abreviaturas salvo las universales (`id`, `url`, `db`). Lo que ya existe en español no se renombra solo por el idioma: se traduce cuando se reescribe esa parte. Los comentarios y la documentación van en español.
+Variables, funciones, archivos y tablas nuevas van en inglés, con nombres que digan qué son y sin abreviaturas salvo las universales (`id`, `url`, `db`). Lo que ya existe en español no se renombra solo por el idioma: se traduce cuando se reescribe esa parte. Los comentarios y la documentación van en español. En sistemas cuyo negocio está en español (SICAP), los términos de negocio se quedan en español y el resto va en inglés (PHP-022).
 
 **Por qué:** el nombre es la primera documentación; renombrar código que funciona solo por idioma es riesgo sin beneficio, y así el inglés entra de forma gradual.
 

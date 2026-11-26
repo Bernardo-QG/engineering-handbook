@@ -174,11 +174,11 @@ Las clases comunes viven en una carpeta base con la misma estructura que una ins
 
 ### PHP-017 · Lo de cada entidad va en configuración — DEBE
 
-Lo que cambia por entidad (montos, correos, mensajes, tipo de aviso) se lee de la configuración de la instalación o del módulo (`_config.php`). Una clase común nunca se edita para una sola entidad.
+Lo que cambia por entidad (montos, correos, mensajes, tipo de aviso, tokens) se lee de la configuración de la instalación (`clases/config_entidad.php`, que no entra al repositorio) o del módulo (`_config.php`). Una clase común nunca se edita para una sola entidad.
 
 **Por qué:** en cuanto una clase común tiene un cambio local deja de ser común, y la siguiente mejora ya no se puede copiar sin perder ese cambio.
 
-✔ `AlertaSistema` lee `TIPO_AVISO` ("swal" o "alert") de la configuración de la instalación
+✔ La clase lee `Utils::config("AVISO", "swal")` y lunma tiene `"AVISO" => "alert"` en su `clases/config_entidad.php`
 ✘ Cambiar `swal` por `alert` dentro de `alerta_sistema.php` de una entidad
 
 ### PHP-018 · Capas y dependencias — DEBE
@@ -222,11 +222,44 @@ Se migra primero lo que no depende de nada: utilidades y servicios aislados (cor
 ✔ `pld.php` → clases de servicio, y luego las pantallas de PLD que se toquen
 ✘ Reescribir `accionregistros()` mientras hay pantallas que no usan `Sql`
 
-### PHP-022 · Nombres en código migrado — DEBERÍA
+### PHP-022 · Idioma de los nombres: patrón en inglés, negocio en español — DEBE
 
-Las clases van en `PascalCase` y su archivo en `snake_case` (`ClienteHttp` → `cliente_http.php`). Los parámetros llevan el prefijo `$p` (`$pUsuario`), las variables locales van sin prefijo y las constantes de clase en `UPPER_SNAKE_CASE`, en lugar de valores sueltos.
+Un nombre se arma con palabras de tres tipos:
 
-**Por qué:** el prefijo `$p` en lugar del `$_` viejo muestra de un vistazo qué código ya pasó por la migración, y las constantes evitan números mágicos repetidos.
+- **Patrón**, en inglés y de una lista cerrada: booleanos (`is`, `has`, `can`, `should`), acceso (`get`, `set`, `find`, `save`), eventos (`on`, `handle`), conversión (`to`, `from`), ciclo de vida (`init`, `close`) y sufijos de rol (`Service`, `Config`, `Exception`).
+- **Infraestructura**, en inglés: lo que existiría en cualquier sistema (`Logger`, `HttpClient`, `Session`, `Validator`, `escape()`, `run()`).
+- **Negocio**, en español y sin acentos ni ñ: los conceptos y acciones tal como los dice el usuario (`Persona`, `Prestamo`, `Ficha`, `AlertaPld`, `buscar`, `dictaminar`, `anio`).
 
-✔ `Sql::run($pQuery, Sql::VISTAZO_COMPLETO)`
-✘ `ConsultaSQL($_Link, $_Cadena, 2)`
+El negocio se nombra igual en pantalla, en el código y en la base. Lo que ya existe no se renombra solo por idioma (COD-001).
+
+**Por qué:** traducir el negocio obliga a traducir de ida y vuelta al hablar con el usuario, y el vocabulario de patrones en inglés es el que ya reconoce cualquier programador. Es la práctica de lenguaje ubicuo de DDD para equipos que no hablan inglés.
+
+✔ `onBuscar` · `isPep()` · `getSaldoPromedio()` · `AlertaPldService` · `$hasPerfilRebasado`
+✘ `onSearch` para el botón "Buscar" · `esPep()` · `PldAlertService` · `$año`
+
+### PHP-023 · Forma de los nombres — DEBE
+
+Los nombres son cortos pero dicen su propósito sin leer el código: sin abreviaturas inventadas ni palabras de relleno (`Data`, `Info`, `Manager`, `Helper`). Cuando una opción se usa casi siempre, se ofrece también como método propio en lugar de obligar a pasarla como parámetro (`Session::definePost()` junto a `Session::define(..., Session::FROM_POST)`).
+
+Se sigue PSR-1 y, donde PSR-1 no dice nada, lo que ya usa SICAP:
+
+| Artefacto | Forma | Ejemplo |
+|---|---|---|
+| Clase | `StudlyCaps` | `AlertaPldService`, `HttpClient` |
+| Archivo de clase | `snake_case` de la clase, una clase por archivo | `alerta_pld_service.php` |
+| Pantalla nueva | `snake_case`, dominio primero | `pld_analisis_fichas.php` |
+| Configuración | `<pantalla>_config.php`; de la instalación, `clases/config_entidad.php` | `reportes_config.php` |
+| Método | `camelCase`, empieza con verbo | `buscarPersona()`, `getSaldo()` |
+| Parámetro | `$p` + `StudlyCaps` | `$pIdPersona` |
+| Variable local y propiedad | `camelCase` | `$totalEfectivo`, `self::$link` |
+| Constante | `UPPER_SNAKE_CASE`, nunca valores sueltos | `MONTO_RELEVANTE_USD` |
+| Clave de sesión nueva | agrupada por módulo | `$_SESSION['pld']['idPersona']` |
+| Campo de formulario y función JS | `camelCase` | `name="idPersona"`, `validarFormulario()` |
+| Botón o acción | `on` + acción | `onBuscar`, `onDictaminar` |
+| Tabla y columna nuevas | como las existentes: tabla en minúsculas, columna `StudlyCaps` con `Id` | `lavadoalertas.IdPersona` |
+| Función global | no se crean; solo envoltorios `@deprecated` | `ValidarCampo()` |
+
+**Por qué:** PSR-1 es el estándar básico de PHP. El prefijo `$p` muestra qué código ya pasó por la migración, y en la base se sigue lo existente porque un estilo distinto complica las consultas que combinan tablas.
+
+✔ `class Validator` en `validator.php` con `public static function checkField($pField, $pValue, $pRules)` · `Session::definePost()`
+✘ `class validaciones` en `Validaciones.php` · `ValidationHelperManager::doValidateFieldData()` · `Ses::dp()`
