@@ -8,12 +8,14 @@ Una regla nueva sube la versión menor; quitar o cambiar el sentido de una regla
 
 ### Agregado
 
+- GIT-009: commits y pull requests sin firmas de agentes (`Co-Authored-By` de una IA, ligas a sesiones, "Generated with …").
 - PHP-008 a PHP-011: entrada limpia a SQL, funciones comunes en clases, consultas por `Sql` y arranque con `guard_modulo`, según la migración gradual en curso.
 - PHP-012 a PHP-015: base explícita en consultas manuales, verificar menú + archivo + permiso, inventario del servidor y separar el entregable de auditoría del análisis interno.
 - PHP-016 a PHP-023: base canónica única, variaciones de entidad en configuración, capas de dependencia, dos bitácoras, retornos predecibles, orden de migración, idioma de los nombres (patrón en inglés, negocio en español) y forma de los nombres (PSR-1). Sustituyen los documentos de estándares que había en cada instalación.
 
 ### Cambiado
 
+- GIT-008: excepción para scripts de Windows (`*.cmd`, `*.bat`) con `eol=crlf`.
 - COD-001: en sistemas con negocio en español, los términos de negocio se quedan en español (PHP-022).
 - PHP-009: las clases salen de la base canónica (PHP-016), ya no de la instalación más avanzada.
 - PHP-004: define qué significa migrar un archivo.

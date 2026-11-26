@@ -67,9 +67,18 @@ Todo repositorio arranca con `.gitignore` que excluye secretos (`.env`, `.env.*`
 
 ### GIT-008 · Fin de línea LF — DEBE
 
-Todo repositorio lleva `.gitattributes` con `* text=auto eol=lf`.
+Todo repositorio lleva `.gitattributes` con `* text=auto eol=lf`. La excepción son los scripts de Windows que lo necesitan: `*.cmd text eol=crlf` (igual para `*.bat`).
 
 **Por qué:** en Windows git convierte a CRLF y los diffs muestran archivos completos como cambiados.
 
 ✔ `.gitattributes` en la raíz
 ✘ Depender de que cada equipo tenga bien `core.autocrlf`
+
+### GIT-009 · Commits sin firmas de agentes — NO DEBE
+
+Ni los commits ni los pull requests llevan líneas que agregue una IA o herramienta: `Co-Authored-By` de un agente, ligas a sesiones, ni textos como "Generated with …". El autor es la persona que hace el commit, y el mensaje es solo el de GIT-001.
+
+**Por qué:** el historial registra qué cambió y quién responde por el cambio; las firmas automáticas ensucian el mensaje y hacen aparecer como coautor a quien no responde por el código.
+
+✔ `chore: agrega estado_migracion.cmd para correr el estado con doble clic`
+✘ El mismo mensaje con `Co-Authored-By: Claude …` y `Claude-Session: https://…` al final
